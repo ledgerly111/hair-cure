@@ -63,7 +63,7 @@ const Home = () => {
                         <Reveal delay={0.3}>
                             <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 md:p-12">
                                 <img
-                                    src="/hero_image.png"
+                                    src="/hero_woman_art.png"
                                     alt="Hair Cure - Premium Hair Restoration"
                                     style={{
                                         width: '100%',
@@ -147,8 +147,8 @@ const Home = () => {
                         ))}
                     </ul>
                 </div>
-                <div style={{ background: 'var(--brand-offwhite)', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
-                    <img src="/happy_patient.png" alt="Patient" style={{ maxWidth: '80%', filter: 'grayscale(100%) contrast(1.2)' }} />
+                <div style={{ background: '#d0f0fd', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
+                    <img src="/happy_patient_art.png" alt="Patient" style={{ maxWidth: '80%', filter: 'none' }} />
                 </div>
             </section>
         </div>
