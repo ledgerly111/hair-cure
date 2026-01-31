@@ -1,0 +1,280 @@
+/* Brutalist Hero */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 80px;
+    background-color: var(--brand-offwhite);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 90vh;
+    border-bottom: var(--border-thick);
+}
+
+@media (min-width: 992px) {
+    .hero-content-wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.hero-text-side {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: var(--border-thick);
+}
+
+@media (min-width: 992px) {
+    .hero-text-side {
+        border-bottom: none;
+        border-right: var(--border-thick);
+        padding: 4rem 6rem;
+    }
+}
+
+.hero-badge-brutalist {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--brand-orange);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    /* Reduced from 4rem for mobile safety */
+    line-height: 0.9;
+    font-weight: 900;
+    color: var(--brand-black);
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .hero-title {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hero-title {
+        font-size: 6.5rem;
+    }
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgba(23, 23, 23, 0.7);
+    max-width: 500px;
+    margin-bottom: 2.5rem;
+    line-height: 1.4;
+}
+
+.btn-brutal {
+    display: flex;
+    /* Changed from inline-flex mainly for mobile full width potential */
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background: var(--brand-black);
+    color: white;
+    padding: 1.2rem 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    /* Full width on mobile */
+}
+
+@media (min-width: 768px) {
+    .btn-brutal {
+        width: auto;
+        display: inline-flex;
+        padding: 1.5rem 2.5rem;
+        font-size: 1rem;
+    }
+}
+
+.btn-brutal:hover {
+    background: var(--brand-yellow);
+    color: var(--brand-black);
+    box-shadow: 8px 8px 0 0 var(--brand-orange);
+    transform: translate(-4px, -4px);
+}
+
+.hero-image-side {
+    background: var(--brand-black);
+    position: relative;
+    overflow: hidden;
+    min-height: 45vh;
+    /* Adjustable for mobile */
+}
+
+.hero-cartoon-brutal {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Changed to contain for cartoons */
+    padding: 2rem;
+    filter: grayscale(100%);
+    transition: filter 0.5s;
+}
+
+.hero-image-side:hover .hero-cartoon-brutal {
+    filter: grayscale(0%);
+}
+
+.hud-overlay {
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.hud-box {
+    border-left: 4px solid var(--brand-yellow);
+    padding-left: 1rem;
+}
+
+.hud-label {
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.hud-value {
+    color: var(--brand-yellow);
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+/* Services List Styles */
+.services-list-brutal {
+    display: flex;
+    flex-direction: column;
+}
+
+.service-item-brutal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.5rem;
+    border-bottom: var(--border-thin);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+@media (max-width: 768px) {
+    .service-item-brutal {
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .service-arrow {
+        align-self: flex-end;
+    }
+}
+
+.service-item-brutal:hover {
+    background: var(--brand-yellow);
+}
+
+.service-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .service-title {
+        font-size: 1.5rem;
+        /* Reduced from 2.5rem */
+    }
+}
+
+.service-desc {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.service-arrow {
+    transform: rotate(-45deg);
+    transition: transform 0.3s;
+}
+
+.service-item-brutal:hover .service-arrow {
+    transform: rotate(0deg) scale(1.2);
+}
+
+/* Stats Section */
+.stats-brutal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    background: white;
+    padding: 2rem 0;
+    gap: 1rem;
+}
+
+.stat-box {
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--brand-black);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748B;
+}

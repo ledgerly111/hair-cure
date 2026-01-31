@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
+:root {
+  /* Brand Colors - Orange Theme */
+  --brand-yellow: #F97316;
+  /* Switched to Orange */
+  --brand-orange: #EA580C;
+  /* Darker Orange */
+  --brand-pink: #F472B6;
+  --brand-black: #171717;
+  --brand-offwhite: #FFF7ED;
+  /* Warm Orange tint offwhite */
+  --brand-white: #FFFFFF;
+
+  /* Fonts */
+  --font-sans: 'Inter', sans-serif;
+
+  /* Spacing */
+  --container-width: 1400px;
+  --header-height: 80px;
+
+  /* Borders */
+  --border-thick: 4px solid var(--brand-black);
+  --border-thin: 2px solid var(--brand-black);
+
+  /* Legacy Mappings */
+  --primary-blue: var(--brand-black);
+  --primary-dark: var(--brand-black);
+  --bg-soft-blue: var(--brand-offwhite);
+  --accent-light-blue: var(--brand-yellow);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--brand-offwhite);
+  color: var(--brand-black);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global Noise Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.04;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Custom Selection */
+::selection {
+  background: var(--brand-black);
+  color: var(--brand-yellow);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Utilities */
+.bg-grid {
+  background-size: 40px 40px;
+  background-image: radial-gradient(circle, #171717 1px, transparent 1px);
+  opacity: 0.05;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Typography Utilities */
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.font-black {
+  font-weight: 900;
+}
+
+.tracking-tight {
+  letter-spacing: -0.05em;
+}
+
+.tracking-wide {
+  letter-spacing: 0.1em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--brand-offwhite);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-black);
+  border: 2px solid var(--brand-offwhite);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-yellow);
+}
