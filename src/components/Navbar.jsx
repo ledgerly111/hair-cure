@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ArrowUpRight, Phone } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+    
+    // Touch handling for swipe to close
+    const x = useMotionValue(0);
+    const opacity = useTransform(x, [0, 100], [1, 0]);
+    const scale = useTransform(x, [0, 100], [1, 0.95]);
 
     // Track scroll for navbar styling
     useEffect(() => {
         const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
+            setScrolled(window.scrollY > 20);
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -27,17 +32,27 @@ const Navbar = () => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.body.style.touchAction = 'none';
         } else {
             document.body.style.overflow = '';
+            document.body.style.touchAction = '';
         }
         return () => {
             document.body.style.overflow = '';
+            document.body.style.touchAction = '';
         };
     }, [isOpen]);
 
+    // Handle swipe to close
+    const handleDragEnd = useCallback((_, info) => {
+        if (info.offset.x > 80 || info.velocity.x > 500) {
+            setIsOpen(false);
+        }
+    }, []);
+
     const menuVariants = {
         closed: {
-            clipPath: "circle(0% at calc(100% - 40px) 40px)",
+            x: "100%",
             transition: {
                 type: "spring",
                 stiffness: 400,
@@ -47,12 +62,11 @@ const Navbar = () => {
             }
         },
         open: {
-            clipPath: "circle(150% at calc(100% - 40px) 40px)",
+            x: 0,
             transition: {
                 type: "spring",
-                stiffness: 60,
-                damping: 20,
-                restDelta: 2,
+                stiffness: 300,
+                damping: 30,
                 staggerChildren: 0.08,
                 delayChildren: 0.1
             }
@@ -60,12 +74,15 @@ const Navbar = () => {
     };
 
     const itemVariants = {
-        closed: { opacity: 0, x: 50, filter: 'blur(10px)' },
+        closed: { opacity: 0, x: 30 },
         open: {
             opacity: 1,
             x: 0,
-            filter: 'blur(0px)',
-            transition: { ease: [0.22, 1, 0.36, 1], duration: 0.8 }
+            transition: { 
+                type: "spring",
+                stiffness: 300,
+                damping: 24
+            }
         }
     };
 
@@ -80,21 +97,18 @@ const Navbar = () => {
     return (
         <>
             <motion.nav 
-                className="navbar"
+                className={`navbar ${scrolled ? 'scrolled' : ''}`}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                style={{
-                    background: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
-                    boxShadow: scrolled ? '0 4px 30px rgba(0,0,0,0.1)' : 'none',
-                }}
             >
                 <div className="navbar-container">
                     <Link to="/" className="logo-container">
                         <motion.div 
                             className="logo-icon"
-                            whileHover={{ rotate: 180, scale: 1.1 }}
-                            transition={{ type: "spring", stiffness: 200 }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 400 }}
                         >
                             <div className="logo-dot"></div>
                         </motion.div>
@@ -127,7 +141,26 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                        {/* Quick Call Button - Mobile Only */}
+                        <motion.a 
+                            href="tel:+919567101002"
+                            className="hide-desktop"
+                            style={{
+                                width: '44px',
+                                height: '44px',
+                                background: 'var(--brand-orange)',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                            }}
+                            whileTap={{ scale: 0.9 }}
+                        >
+                            <Phone size={20} />
+                        </motion.a>
+
                         <Link to="/contact" className="nav-btn">
                             Book Now
                         </Link>
@@ -135,10 +168,10 @@ const Navbar = () => {
                         <motion.button 
                             className="mobile-menu-btn" 
                             onClick={() => setIsOpen(true)}
-                            whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
+                            aria-label="Open menu"
                         >
-                            <Menu size={24} strokeWidth={3} />
+                            <Menu size={22} strokeWidth={2.5} />
                         </motion.button>
                     </div>
                 </div>
@@ -146,64 +179,115 @@ const Navbar = () => {
 
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        className="mobile-menu"
-                        initial="closed"
-                        animate="open"
-                        exit="closed"
-                        variants={menuVariants}
-                    >
-                        <div className="menu-header">
-                            <div />
-                            <motion.button 
-                                className="close-btn" 
-                                onClick={() => setIsOpen(false)}
-                                whileHover={{ rotate: 90, scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <X size={32} />
-                            </motion.button>
-                        </div>
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            style={{
+                                position: 'fixed',
+                                inset: 0,
+                                background: 'rgba(0,0,0,0.5)',
+                                zIndex: 199,
+                            }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsOpen(false)}
+                        />
+                        
+                        {/* Menu Panel */}
+                        <motion.div
+                            className="mobile-menu"
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            variants={menuVariants}
+                            style={{ x, opacity, scale }}
+                            drag="x"
+                            dragConstraints={{ left: 0, right: 100 }}
+                            dragElastic={0.2}
+                            onDragEnd={handleDragEnd}
+                            dragSnapToOrigin={false}
+                        >
+                            {/* Swipe handle indicator */}
+                            <div className="hide-desktop" style={{
+                                position: 'absolute',
+                                top: '12px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                width: '40px',
+                                height: '4px',
+                                background: 'rgba(0,0,0,0.2)',
+                                borderRadius: '2px',
+                            }} />
 
-                        <div className="mobile-links-container">
-                            {navLinks.map((link, i) => (
-                                <motion.div
-                                    key={link.name}
-                                    variants={itemVariants}
-                                    className="menu-item-wrapper"
+                            <div className="menu-header">
+                                <div />
+                                <motion.button 
+                                    className="close-btn" 
+                                    onClick={() => setIsOpen(false)}
+                                    whileTap={{ scale: 0.9 }}
+                                    aria-label="Close menu"
                                 >
-                                    <Link
-                                        to={link.path}
-                                        state={link.state}
-                                        className="mobile-nav-link"
+                                    <X size={24} />
+                                </motion.button>
+                            </div>
+
+                            <div className="mobile-links-container">
+                                {navLinks.map((link, i) => (
+                                    <motion.div
+                                        key={link.name}
+                                        variants={itemVariants}
+                                        className="menu-item-wrapper"
+                                    >
+                                        <Link
+                                            to={link.path}
+                                            state={link.state}
+                                            className="mobile-nav-link"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'space-between' 
+                                            }}>
+                                                <span>{link.name}</span>
+                                                <ArrowUpRight size={24} className="menu-arrow" />
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+
+                                {/* Quick Contact Buttons - Mobile */}
+                                <motion.div 
+                                    variants={itemVariants}
+                                    className="quick-contact-bar"
+                                >
+                                    <a 
+                                        href="tel:+919567101002"
+                                        className="quick-contact-btn secondary"
                                         onClick={() => setIsOpen(false)}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <span>{link.name}</span>
-                                            <motion.div
-                                                initial={{ opacity: 0, x: -20 }}
-                                                whileHover={{ opacity: 1, x: 0 }}
-                                            >
-                                                <ArrowUpRight size={32} className="menu-arrow" />
-                                            </motion.div>
-                                        </div>
+                                        <Phone size={18} />
+                                        Call
+                                    </a>
+                                    <Link 
+                                        to="/contact"
+                                        className="quick-contact-btn"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        Book Now
                                     </Link>
                                 </motion.div>
-                            ))}
-                        </div>
+                            </div>
 
-                        {/* Menu Footer */}
-                        <motion.div 
-                            className="menu-footer"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '0.9rem' }}>
-                                © 2026 Hair Cure. All rights reserved.
-                            </p>
+                            <motion.div 
+                                className="menu-footer"
+                                variants={itemVariants}
+                            >
+                                <p>© 2026 Hair Cure. All rights reserved.</p>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </>

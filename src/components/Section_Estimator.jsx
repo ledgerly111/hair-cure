@@ -1,21 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ArrowRight, ChevronRight } from 'lucide-react';
+import { Activity, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Reveal } from './ui/Reveal';
-import { MagneticButton } from './ui/MagneticButton';
 import { GradientText } from './ui/GradientText';
 
 const Section_Estimator = () => {
+    const [isMobile, setIsMobile] = useState(false);
+    const [selectedGrade, setSelectedGrade] = useState(null);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
         <section style={{ 
             background: 'var(--brand-black)', 
             color: 'white', 
-            padding: '6rem 2rem', 
+            padding: isMobile ? '3rem 1rem' : '6rem 2rem', 
             position: 'relative', 
             overflow: 'hidden' 
         }}>
-            {/* Animated background elements */}
+            {/* Background elements */}
             <motion.div 
                 style={{
                     position: 'absolute',
@@ -28,8 +37,8 @@ const Section_Estimator = () => {
                 }}
             />
             
-            {/* Floating orbs */}
-            {[...Array(3)].map((_, i) => (
+            {/* Floating orbs - desktop only */}
+            {!isMobile && [...Array(3)].map((_, i) => (
                 <motion.div
                     key={i}
                     style={{
@@ -61,8 +70,8 @@ const Section_Estimator = () => {
                 position: 'relative', 
                 zIndex: 1, 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                gap: '4rem', 
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: isMobile ? '2rem' : '4rem', 
                 alignItems: 'center' 
             }}>
                 <div>
@@ -73,19 +82,20 @@ const Section_Estimator = () => {
                                 alignItems: 'center', 
                                 gap: '0.5rem', 
                                 background: 'rgba(255,255,255,0.1)', 
-                                padding: '0.5rem 1rem', 
+                                padding: isMobile ? '0.4rem 0.75rem' : '0.5rem 1rem', 
                                 borderRadius: '30px', 
-                                marginBottom: '2rem',
+                                marginBottom: '1.5rem',
                                 border: '1px solid rgba(255,255,255,0.1)'
                             }}
-                            whileHover={{ scale: 1.05, background: 'rgba(255,255,255,0.15)' }}
+                            whileHover={isMobile ? {} : { scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             transition={{ type: "spring", stiffness: 400 }}
                         >
-                            <Activity size={18} color="var(--brand-orange)" />
+                            <Activity size={isMobile ? 16 : 18} color="var(--brand-orange)" />
                             <span style={{ 
                                 fontWeight: 700, 
                                 textTransform: 'uppercase', 
-                                fontSize: '0.8rem', 
+                                fontSize: isMobile ? '0.7rem' : '0.8rem', 
                                 letterSpacing: '1px' 
                             }}>
                                 AI-Powered Analysis
@@ -95,11 +105,11 @@ const Section_Estimator = () => {
                     
                     <Reveal delay={0.1}>
                         <h2 style={{ 
-                            fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
+                            fontSize: isMobile ? '2rem' : 'clamp(2.5rem, 5vw, 4rem)', 
                             fontWeight: 900, 
                             textTransform: 'uppercase', 
                             lineHeight: 1.1, 
-                            marginBottom: '1.5rem' 
+                            marginBottom: '1.25rem' 
                         }}>
                             Diagnostic<br />
                             <GradientText>Estimator</GradientText>
@@ -108,10 +118,10 @@ const Section_Estimator = () => {
                     
                     <Reveal delay={0.2}>
                         <p style={{ 
-                            fontSize: '1.2rem', 
+                            fontSize: isMobile ? '1rem' : '1.2rem', 
                             color: 'rgba(255,255,255,0.7)', 
                             maxWidth: '500px', 
-                            marginBottom: '3rem', 
+                            marginBottom: isMobile ? '2rem' : '3rem', 
                             lineHeight: 1.6 
                         }}>
                             Not sure what you need? Use our free diagnostic tool to assess your hair grade and get a preliminary cost estimate in under 2 minutes.
@@ -124,19 +134,21 @@ const Section_Estimator = () => {
                                 style={{
                                     display: 'inline-flex', 
                                     alignItems: 'center', 
-                                    gap: '1rem',
-                                    padding: '1.2rem 2.5rem', 
+                                    gap: '0.75rem',
+                                    padding: isMobile ? '1rem 1.75rem' : '1.2rem 2.5rem', 
                                     background: 'white',
                                     color: 'var(--brand-black)', 
                                     fontWeight: 900, 
                                     textTransform: 'uppercase',
-                                    borderRadius: '0px', 
+                                    borderRadius: '12px', 
                                     textDecoration: 'none',
                                     border: '2px solid white',
                                     cursor: 'pointer',
-                                    fontSize: '1rem',
+                                    fontSize: isMobile ? '0.9rem' : '1rem',
+                                    width: isMobile ? '100%' : 'auto',
+                                    justifyContent: isMobile ? 'center' : 'flex-start'
                                 }}
-                                whileHover={{ 
+                                whileHover={isMobile ? {} : { 
                                     background: 'transparent', 
                                     color: 'white',
                                     boxShadow: '0 0 30px rgba(249, 115, 22, 0.5)'
@@ -144,7 +156,7 @@ const Section_Estimator = () => {
                                 whileTap={{ scale: 0.98 }}
                                 transition={{ duration: 0.2 }}
                             >
-                                Start Diagnosis <ArrowRight size={20} />
+                                Start Diagnosis <ArrowRight size={isMobile ? 18 : 20} />
                             </motion.button>
                         </Link>
                     </Reveal>
@@ -153,7 +165,11 @@ const Section_Estimator = () => {
                 {/* Visual Representation of Grades */}
                 <Reveal delay={0.2}>
                     <motion.div 
-                        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}
+                        style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(3, 1fr)', 
+                            gap: isMobile ? '0.5rem' : '1rem' 
+                        }}
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
@@ -161,34 +177,52 @@ const Section_Estimator = () => {
                         {[1, 2, 3, 4, 5, 6].map((grade, i) => (
                             <motion.div 
                                 key={grade} 
+                                onClick={() => setSelectedGrade(grade)}
                                 style={{
                                     aspectRatio: '1', 
-                                    border: '2px solid rgba(255,255,255,0.1)',
+                                    border: `2px solid ${selectedGrade === grade ? 'var(--brand-orange)' : 'rgba(255,255,255,0.1)'}`,
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center',
                                     fontWeight: 900, 
-                                    fontSize: '1.5rem', 
-                                    color: 'rgba(255,255,255,0.3)',
-                                    background: 'rgba(255,255,255,0.02)',
-                                    borderRadius: '8px',
+                                    fontSize: isMobile ? '1.25rem' : '1.5rem', 
+                                    color: selectedGrade === grade ? 'var(--brand-orange)' : 'rgba(255,255,255,0.3)',
+                                    background: selectedGrade === grade ? 'rgba(249, 115, 22, 0.1)' : 'rgba(255,255,255,0.02)',
+                                    borderRadius: '12px',
                                     cursor: 'pointer',
+                                    transition: 'all 0.2s'
                                 }}
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                whileHover={{ 
+                                transition={{ delay: i * 0.05 }}
+                                whileHover={isMobile ? {} : { 
                                     borderColor: 'var(--brand-orange)',
                                     color: 'var(--brand-orange)',
                                     background: 'rgba(249, 115, 22, 0.1)',
                                     scale: 1.05
                                 }}
+                                whileTap={{ scale: 0.95 }}
                             >
                                 G{grade}
                             </motion.div>
                         ))}
                     </motion.div>
+                    
+                    {selectedGrade && (
+                        <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            style={{
+                                textAlign: 'center',
+                                marginTop: '1rem',
+                                fontSize: '0.9rem',
+                                color: 'rgba(255,255,255,0.6)'
+                            }}
+                        >
+                            Grade {selectedGrade} selected. Book a consultation for detailed analysis.
+                        </motion.p>
+                    )}
                 </Reveal>
             </div>
         </section>

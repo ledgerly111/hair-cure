@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Reveal } from '../components/ui/Reveal';
-import { StaggerContainer, StaggerItem } from '../components/ui/StaggerContainer';
 import { GradientText } from '../components/ui/GradientText';
 import Lightbox from '../components/Lightbox';
+import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import '../styles/Gallery.css';
 
-// Mock data - will be replaced with Supabase data later
 const mockTransformations = [
     {
         id: 1,
@@ -61,13 +60,29 @@ const mockTransformations = [
 const categories = ['All', 'Hair Transplant', 'PRP Therapy', 'Cosmetic'];
 
 const Gallery = () => {
+    const [isMobile, setIsMobile] = useState(false);
     const [activeFilter, setActiveFilter] = useState('All');
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const filteredData = activeFilter === 'All'
         ? mockTransformations
         : mockTransformations.filter((item) => item.category === activeFilter);
+
+    // Mobile pagination
+    const itemsPerPage = isMobile ? 1 : 6;
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const currentItems = isMobile 
+        ? filteredData.slice(currentPage, currentPage + 1)
+        : filteredData;
 
     const openLightbox = (index) => {
         setSelectedIndex(index);
@@ -86,18 +101,41 @@ const Gallery = () => {
         setSelectedIndex((prev) => Math.min(filteredData.length - 1, prev + 1));
     };
 
+    const handleFilterChange = (cat) => {
+        setActiveFilter(cat);
+        setCurrentPage(0);
+    };
+
+    const nextPage = () => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
+    const prevPage = () => setCurrentPage((prev) => Math.max(0, prev - 1));
+
+    // Swipe handling for mobile
+    const handleDragEnd = (e, info) => {
+        if (isMobile) {
+            if (info.offset.x < -50 && currentPage < totalPages - 1) {
+                nextPage();
+            } else if (info.offset.x > 50 && currentPage > 0) {
+                prevPage();
+            }
+        }
+    };
+
     return (
         <div className="gallery-page">
             {/* Hero Section */}
-            <section className="gallery-hero" style={{ paddingTop: '80px' }}>
-                <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+            <section style={{ 
+                paddingTop: 'var(--header-height)',
+                background: 'linear-gradient(180deg, white 0%, var(--brand-offwhite) 100%)',
+                borderBottom: 'var(--border-thick)'
+            }}>
+                <div style={{ textAlign: 'center', padding: isMobile ? '3rem 1rem' : '4rem 2rem' }}>
                     <motion.span
                         style={{
                             display: 'inline-block',
                             padding: '0.5rem 1rem',
                             background: 'rgba(249, 115, 22, 0.1)',
                             borderRadius: '20px',
-                            fontSize: '0.85rem',
+                            fontSize: '0.8rem',
                             fontWeight: 700,
                             textTransform: 'uppercase',
                             color: 'var(--brand-orange)',
@@ -115,7 +153,7 @@ const Gallery = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
                         style={{
-                            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+                            fontSize: isMobile ? '2rem' : 'clamp(2.5rem, 6vw, 4rem)',
                             fontWeight: 900,
                             textTransform: 'uppercase',
                             marginBottom: '1rem',
@@ -130,19 +168,19 @@ const Gallery = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         style={{
-                            fontSize: '1.1rem',
+                            fontSize: isMobile ? '0.95rem' : '1.1rem',
                             color: '#666',
                             maxWidth: '600px',
                             margin: '0 auto 2rem',
                             lineHeight: 1.6
                         }}
                     >
-                        Witness the life-changing results of our patients. Hover over the images to see the incredible before and after transformations.
+                        Witness the life-changing results of our patients. 
+                        {isMobile ? 'Tap to view full transformation.' : 'Hover over the images to see the incredible before and after transformations.'}
                     </motion.p>
 
                     {/* Filter Tabs */}
                     <motion.div
-                        className="filter-tabs"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
@@ -150,18 +188,17 @@ const Gallery = () => {
                             display: 'flex',
                             justifyContent: 'center',
                             gap: '0.5rem',
-                            flexWrap: 'wrap'
+                            flexWrap: 'wrap',
+                            padding: isMobile ? '0 0.5rem' : '0'
                         }}
                     >
-                        {categories.map((cat, i) => (
+                        {categories.map((cat) => (
                             <motion.button
                                 key={cat}
-                                className={`filter-btn ${activeFilter === cat ? 'active' : ''}`}
-                                onClick={() => setActiveFilter(cat)}
-                                whileHover={{ scale: 1.05 }}
+                                onClick={() => handleFilterChange(cat)}
                                 whileTap={{ scale: 0.95 }}
                                 style={{
-                                    padding: '0.75rem 1.5rem',
+                                    padding: isMobile ? '0.6rem 1rem' : '0.75rem 1.5rem',
                                     borderRadius: '30px',
                                     border: '2px solid',
                                     borderColor: activeFilter === cat ? 'var(--brand-orange)' : '#E5E7EB',
@@ -169,9 +206,10 @@ const Gallery = () => {
                                     color: activeFilter === cat ? 'white' : 'var(--brand-black)',
                                     fontWeight: 700,
                                     textTransform: 'uppercase',
-                                    fontSize: '0.85rem',
+                                    fontSize: isMobile ? '0.7rem' : '0.85rem',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.2s',
+                                    minHeight: '40px'
                                 }}
                             >
                                 {cat}
@@ -182,45 +220,53 @@ const Gallery = () => {
             </section>
 
             {/* Gallery Grid */}
-            <section className="gallery-container" style={{ padding: '2rem' }}>
+            <section style={{ padding: isMobile ? '1.5rem 1rem' : '3rem 2rem' }}>
                 <AnimatePresence mode="wait">
                     <motion.div
-                        className="gallery-grid"
-                        key={activeFilter}
+                        key={`${activeFilter}-${currentPage}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.4 }}
                         style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                            gap: '2rem',
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(350px, 1fr))',
+                            gap: isMobile ? '1rem' : '2rem',
                             maxWidth: 'var(--container-width)',
                             margin: '0 auto'
                         }}
+                        drag={isMobile ? "x" : false}
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={0.2}
+                        onDragEnd={handleDragEnd}
                     >
-                        {filteredData.map((item, index) => (
+                        {(isMobile ? currentItems : filteredData).map((item, index) => (
                             <motion.div
                                 key={item.id}
-                                className="ba-card"
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                                onClick={() => openLightbox(index)}
+                                onClick={() => openLightbox(isMobile ? currentPage : index)}
                                 style={{
                                     background: 'white',
                                     borderRadius: '16px',
                                     overflow: 'hidden',
                                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    position: 'relative'
                                 }}
-                                whileHover={{ 
+                                whileHover={isMobile ? {} : { 
                                     y: -10,
                                     boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
                                 }}
+                                whileTap={{ scale: 0.98 }}
                             >
-                                <div className="ba-image-container" style={{ position: 'relative', overflow: 'hidden' }}>
-                                    <div style={{ display: 'flex', height: '250px' }}>
+                                <div style={{ 
+                                    position: 'relative',
+                                    height: isMobile ? '220px' : '250px',
+                                    overflow: 'hidden'
+                                }}>
+                                    <div style={{ display: 'flex', height: '100%' }}>
                                         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                                             <img 
                                                 src={item.beforeImage} 
@@ -230,8 +276,9 @@ const Gallery = () => {
                                                     height: '100%', 
                                                     objectFit: 'cover'
                                                 }} 
+                                                loading="lazy"
                                             />
-                                            <motion.span
+                                            <span
                                                 style={{
                                                     position: 'absolute',
                                                     bottom: '10px',
@@ -240,17 +287,24 @@ const Gallery = () => {
                                                     color: 'white',
                                                     padding: '0.25rem 0.75rem',
                                                     borderRadius: '20px',
-                                                    fontSize: '0.75rem',
+                                                    fontSize: '0.7rem',
                                                     fontWeight: 700,
                                                     textTransform: 'uppercase'
                                                 }}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.3 }}
                                             >
                                                 Before
-                                            </motion.span>
+                                            </span>
                                         </div>
+                                        <div style={{ 
+                                            position: 'absolute',
+                                            left: '50%',
+                                            top: 0,
+                                            bottom: 0,
+                                            width: '2px',
+                                            background: 'white',
+                                            transform: 'translateX(-50%)',
+                                            zIndex: 2
+                                        }} />
                                         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                                             <img 
                                                 src={item.afterImage} 
@@ -260,8 +314,9 @@ const Gallery = () => {
                                                     height: '100%', 
                                                     objectFit: 'cover'
                                                 }} 
+                                                loading="lazy"
                                             />
-                                            <motion.span
+                                            <span
                                                 style={{
                                                     position: 'absolute',
                                                     bottom: '10px',
@@ -270,46 +325,60 @@ const Gallery = () => {
                                                     color: 'white',
                                                     padding: '0.25rem 0.75rem',
                                                     borderRadius: '20px',
-                                                    fontSize: '0.75rem',
+                                                    fontSize: '0.7rem',
                                                     fontWeight: 700,
                                                     textTransform: 'uppercase'
                                                 }}
-                                                initial={{ opacity: 0, x: 10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.3 }}
                                             >
                                                 After
-                                            </motion.span>
+                                            </span>
                                         </div>
                                     </div>
+                                    
+                                    {/* Zoom icon on mobile */}
+                                    {isMobile && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '10px',
+                                            right: '10px',
+                                            background: 'rgba(0,0,0,0.5)',
+                                            borderRadius: '50%',
+                                            padding: '8px'
+                                        }}>
+                                            <ZoomIn size={16} color="white" />
+                                        </div>
+                                    )}
                                 </div>
                                 
-                                <div className="ba-info" style={{ padding: '1.5rem' }}>
-                                    <motion.span 
+                                <div style={{ padding: isMobile ? '1.25rem' : '1.5rem' }}>
+                                    <span 
                                         style={{
                                             display: 'inline-block',
                                             padding: '0.25rem 0.75rem',
                                             background: 'rgba(249, 115, 22, 0.1)',
                                             color: 'var(--brand-orange)',
                                             borderRadius: '20px',
-                                            fontSize: '0.75rem',
+                                            fontSize: '0.7rem',
                                             fontWeight: 700,
                                             textTransform: 'uppercase',
                                             marginBottom: '0.75rem'
                                         }}
-                                        whileHover={{ scale: 1.05 }}
                                     >
                                         {item.category}
-                                    </motion.span>
+                                    </span>
                                     <h3 style={{ 
-                                        fontSize: '1.3rem', 
+                                        fontSize: isMobile ? '1.1rem' : '1.3rem', 
                                         fontWeight: 800, 
                                         marginBottom: '0.5rem',
                                         color: 'var(--brand-black)'
                                     }}>
                                         {item.title}
                                     </h3>
-                                    <p style={{ color: '#666', lineHeight: 1.5, fontSize: '0.95rem' }}>
+                                    <p style={{ 
+                                        color: '#666', 
+                                        lineHeight: 1.5, 
+                                        fontSize: isMobile ? '0.9rem' : '0.95rem' 
+                                    }}>
                                         {item.description}
                                     </p>
                                 </div>
@@ -317,6 +386,71 @@ const Gallery = () => {
                         ))}
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Mobile Pagination */}
+                {isMobile && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        marginTop: '2rem'
+                    }}>
+                        <motion.button
+                            onClick={prevPage}
+                            disabled={currentPage === 0}
+                            whileTap={{ scale: 0.9 }}
+                            style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '50%',
+                                border: '2px solid var(--brand-black)',
+                                background: currentPage === 0 ? '#f0f0f0' : 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                opacity: currentPage === 0 ? 0.5 : 1
+                            }}
+                        >
+                            <ChevronLeft size={20} />
+                        </motion.button>
+                        
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                            {filteredData.map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    onClick={() => setCurrentPage(i)}
+                                    style={{
+                                        width: i === currentPage ? '24px' : '8px',
+                                        height: '8px',
+                                        borderRadius: '4px',
+                                        background: i === currentPage ? 'var(--brand-orange)' : '#ddd'
+                                    }}
+                                    transition={{ duration: 0.3 }}
+                                />
+                            ))}
+                        </div>
+                        
+                        <motion.button
+                            onClick={nextPage}
+                            disabled={currentPage >= totalPages - 1}
+                            whileTap={{ scale: 0.9 }}
+                            style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '50%',
+                                border: '2px solid var(--brand-black)',
+                                background: currentPage >= totalPages - 1 ? '#f0f0f0' : 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                opacity: currentPage >= totalPages - 1 ? 0.5 : 1
+                            }}
+                        >
+                            <ChevronRight size={20} />
+                        </motion.button>
+                    </div>
+                )}
             </section>
 
             <Lightbox

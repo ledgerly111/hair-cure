@@ -1,8 +1,9 @@
-/* Gallery Page Styles */
+/* Gallery Page Styles - Mobile Optimized */
 
 .gallery-page {
     min-height: 100vh;
     background: var(--brand-offwhite);
+    padding-bottom: 2rem;
 }
 
 /* Hero Section */
@@ -13,16 +14,22 @@
 
 /* Filter Buttons */
 .filter-btn {
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.filter-btn:hover {
-    transform: translateY(-2px);
+.filter-btn:active {
+    transform: scale(0.95);
 }
 
 /* Gallery Cards */
 .ba-card {
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ba-card:active {
+    transform: scale(0.98);
 }
 
 .ba-image-container {
@@ -46,25 +53,96 @@
 
 /* Category Tag */
 .ba-category {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-/* Responsive */
+/* Mobile Pagination */
+.pagination-btn {
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease;
+}
+
+.pagination-btn:active {
+    transform: scale(0.9);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Swipe indicator */
+.swipe-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+}
+
+.swipe-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.swipe-dot.active {
+    background: var(--brand-orange);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* Lightbox improvements for mobile */
 @media (max-width: 768px) {
-    .gallery-hero {
-        padding-top: 100px;
+    .lightbox-overlay {
+        background: rgba(0, 0, 0, 0.95);
     }
     
-    .gallery-grid {
-        grid-template-columns: 1fr !important;
+    .lightbox-content {
+        padding: 1rem;
+    }
+    
+    .lightbox-close {
+        top: 1rem;
+        right: 1rem;
+        width: 44px;
+        height: 44px;
+    }
+    
+    .lightbox-nav {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Touch-friendly spacing */
+@media (pointer: coarse) {
+    .ba-card {
+        margin-bottom: 1rem;
     }
     
     .filter-tabs {
         gap: 0.5rem;
+        padding: 0 0.5rem;
     }
     
     .filter-btn {
-        padding: 0.6rem 1rem !important;
-        font-size: 0.75rem !important;
+        min-height: 40px;
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .ba-card,
+    .filter-btn,
+    .pagination-btn {
+        transition: none;
+    }
+    
+    .swipe-dot {
+        transition: none;
     }
 }
