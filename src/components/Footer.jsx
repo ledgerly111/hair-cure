@@ -1,51 +1,146 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Phone, Mail, Instagram, Facebook, ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import '../styles/Footer.css';
 
 const Footer = () => {
+    const quickLinks = [
+        { name: 'Home', path: '/' },
+        { name: 'Services', path: '/', state: { scrollToServices: true } },
+        { name: 'Results', path: '/results' },
+        { name: 'Contact Us', path: '/contact' }
+    ];
+
+    const services = [
+        { name: 'Hair Transplantation', path: '/services', state: { serviceId: 'transplant' } },
+        { name: 'PRP Therapy', path: '/services', state: { serviceId: 'prp' } },
+        { name: 'Scalp Micropigmentation', path: '/services', state: { serviceId: 'smp' } },
+        { name: 'Beard Transplant', path: '/services', state: { serviceId: 'beard' } }
+    ];
+
     return (
         <footer className="footer">
             <div className="footer-container">
-                <div className="footer-column">
-                    <h3>Hair Cure</h3>
-                    <p>Restoring confidence through advanced hair transplantation and cosmetic treatments. Rated 5.0 stars for our natural results and exceptional care.</p>
-                </div>
-
-                <div className="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul className="footer-links">
-                        <li><Link to="/">Home</Link></li>
-                        <li><Link to="/services">Services</Link></li>
-                        <li><Link to="/gallery">Before & After</Link></li>
-                        <li><Link to="/contact">Contact Us</Link></li>
-                    </ul>
-                </div>
-
-                <div className="footer-column">
-                    <h3>Services</h3>
-                    <ul className="footer-links">
-                        <li><Link to="/services">Hair Transplantation</Link></li>
-                        <li><Link to="/services">PRP Therapy</Link></li>
-                        <li><Link to="/services">Scalp Micropigmentation</Link></li>
-                        <li><Link to="/services">Dandruff Treatment</Link></li>
-                    </ul>
-                </div>
-
-                <div className="footer-column">
-                    <h3>Contact Us</h3>
-                    <p><MapPin size={18} style={{ display: 'inline', marginRight: '10px', color: 'var(--primary-blue)' }} /> Edappazhanji, Thiruvananthapuram</p>
-                    <p><Phone size={18} style={{ display: 'inline', marginRight: '10px', color: 'var(--primary-blue)' }} /> +91 95671 01002</p>
-                    <p><Mail size={18} style={{ display: 'inline', marginRight: '10px', color: 'var(--primary-blue)' }} /> info@haircure.com</p>
-                    <div className="social-links">
-                        <a href="https://www.instagram.com/haircureclinic/" target="_blank" rel="noreferrer" className="social-icon"><Instagram size={20} /></a>
-                        <a href="https://www.facebook.com/haircureclinic/" target="_blank" rel="noreferrer" className="social-icon"><Facebook size={20} /></a>
+                <motion.div 
+                    className="footer-column"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0 }}
+                >
+                    <h3 className="footer-logo">Hair Cure</h3>
+                    <p className="footer-desc">
+                        Restoring confidence through advanced hair transplantation and cosmetic treatments. 
+                        Rated 5.0 stars for our natural results and exceptional care.
+                    </p>
+                    
+                    <div className="footer-social">
+                        <motion.a 
+                            href="https://www.instagram.com/haircureclinic/" 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="social-icon"
+                            whileHover={{ scale: 1.1, y: -3 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Instagram size={20} />
+                        </motion.a>
+                        <motion.a 
+                            href="https://www.facebook.com/haircureclinic/" 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="social-icon"
+                            whileHover={{ scale: 1.1, y: -3 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Facebook size={20} />
+                        </motion.a>
                     </div>
-                </div>
+                </motion.div>
+
+                <motion.div 
+                    className="footer-column"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <h4>Quick Links</h4>
+                    <ul className="footer-links">
+                        {quickLinks.map((link, i) => (
+                            <li key={i}>
+                                <Link 
+                                    to={link.path} 
+                                    state={link.state}
+                                    className="footer-link"
+                                >
+                                    <ArrowUpRight size={14} className="link-icon" />
+                                    {link.name}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+
+                <motion.div 
+                    className="footer-column"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <h4>Services</h4>
+                    <ul className="footer-links">
+                        {services.map((service, i) => (
+                            <li key={i}>
+                                <Link 
+                                    to={service.path}
+                                    state={service.state}
+                                    className="footer-link"
+                                >
+                                    <ArrowUpRight size={14} className="link-icon" />
+                                    {service.name}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+
+                <motion.div 
+                    className="footer-column"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <h4>Contact Us</h4>
+                    <div className="footer-contact">
+                        <p>
+                            <MapPin size={18} className="contact-icon" /> 
+                            Edappazhanji, Thiruvananthapuram
+                        </p>
+                        <p>
+                            <Phone size={18} className="contact-icon" /> 
+                            +91 95671 01002
+                        </p>
+                        <p>
+                            <Mail size={18} className="contact-icon" /> 
+                            info@haircure.com
+                        </p>
+                    </div>
+                </motion.div>
             </div>
-            <div className="footer-bottom">
+            
+            <motion.div 
+                className="footer-bottom"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+            >
                 <p>&copy; {new Date().getFullYear()} Hair Cure Transplant & Cosmetic Centre. All rights reserved.</p>
-            </div>
+            </motion.div>
         </footer>
     );
 };

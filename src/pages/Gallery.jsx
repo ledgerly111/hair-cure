@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Reveal } from '../components/ui/Reveal';
+import { StaggerContainer, StaggerItem } from '../components/ui/StaggerContainer';
+import { GradientText } from '../components/ui/GradientText';
 import Lightbox from '../components/Lightbox';
 import '../styles/Gallery.css';
 
@@ -57,28 +60,6 @@ const mockTransformations = [
 
 const categories = ['All', 'Hair Transplant', 'PRP Therapy', 'Cosmetic'];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
-
-const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: 'easeOut',
-        },
-    },
-};
-
 const Gallery = () => {
     const [activeFilter, setActiveFilter] = useState('All');
     const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -107,72 +88,235 @@ const Gallery = () => {
 
     return (
         <div className="gallery-page">
-            <section className="gallery-hero">
-                <motion.h1
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    Transformations
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                    Witness the life-changing results of our patients. Hover over the images to see the incredible before and after transformations.
-                </motion.p>
+            {/* Hero Section */}
+            <section className="gallery-hero" style={{ paddingTop: '80px' }}>
+                <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                    <motion.span
+                        style={{
+                            display: 'inline-block',
+                            padding: '0.5rem 1rem',
+                            background: 'rgba(249, 115, 22, 0.1)',
+                            borderRadius: '20px',
+                            fontSize: '0.85rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            color: 'var(--brand-orange)',
+                            marginBottom: '1rem'
+                        }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Our Results
+                    </motion.span>
+                    
+                    <motion.h1
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        style={{
+                            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
+                            fontWeight: 900,
+                            textTransform: 'uppercase',
+                            marginBottom: '1rem',
+                            color: 'var(--brand-black)'
+                        }}
+                    >
+                        <GradientText>Transformations</GradientText>
+                    </motion.h1>
+                    
+                    <motion.p
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        style={{
+                            fontSize: '1.1rem',
+                            color: '#666',
+                            maxWidth: '600px',
+                            margin: '0 auto 2rem',
+                            lineHeight: 1.6
+                        }}
+                    >
+                        Witness the life-changing results of our patients. Hover over the images to see the incredible before and after transformations.
+                    </motion.p>
 
-                <motion.div
-                    className="filter-tabs"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                >
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            className={`filter-btn ${activeFilter === cat ? 'active' : ''}`}
-                            onClick={() => setActiveFilter(cat)}
-                        >
-                            {cat}
-                        </button>
-                    ))}
-                </motion.div>
+                    {/* Filter Tabs */}
+                    <motion.div
+                        className="filter-tabs"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            flexWrap: 'wrap'
+                        }}
+                    >
+                        {categories.map((cat, i) => (
+                            <motion.button
+                                key={cat}
+                                className={`filter-btn ${activeFilter === cat ? 'active' : ''}`}
+                                onClick={() => setActiveFilter(cat)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                style={{
+                                    padding: '0.75rem 1.5rem',
+                                    borderRadius: '30px',
+                                    border: '2px solid',
+                                    borderColor: activeFilter === cat ? 'var(--brand-orange)' : '#E5E7EB',
+                                    background: activeFilter === cat ? 'var(--brand-orange)' : 'white',
+                                    color: activeFilter === cat ? 'white' : 'var(--brand-black)',
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    fontSize: '0.85rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                {cat}
+                            </motion.button>
+                        ))}
+                    </motion.div>
+                </div>
             </section>
 
-            <section className="gallery-container">
-                <motion.div
-                    className="gallery-grid"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    key={activeFilter}
-                >
-                    {filteredData.map((item, index) => (
-                        <motion.div
-                            key={item.id}
-                            className="ba-card"
-                            variants={cardVariants}
-                            onClick={() => openLightbox(index)}
-                        >
-                            <div className="ba-image-container">
-                                <img src={item.beforeImage} alt="Before" className="ba-image before" />
-                                <img src={item.afterImage} alt="After" className="ba-image after" />
-                                <div className="ba-slider"></div>
-                                <div className="ba-labels">
-                                    <span className="ba-label">Before</span>
-                                    <span className="ba-label">After</span>
+            {/* Gallery Grid */}
+            <section className="gallery-container" style={{ padding: '2rem' }}>
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        className="gallery-grid"
+                        key={activeFilter}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4 }}
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+                            gap: '2rem',
+                            maxWidth: 'var(--container-width)',
+                            margin: '0 auto'
+                        }}
+                    >
+                        {filteredData.map((item, index) => (
+                            <motion.div
+                                key={item.id}
+                                className="ba-card"
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1, duration: 0.5 }}
+                                onClick={() => openLightbox(index)}
+                                style={{
+                                    background: 'white',
+                                    borderRadius: '16px',
+                                    overflow: 'hidden',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                                    cursor: 'pointer'
+                                }}
+                                whileHover={{ 
+                                    y: -10,
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+                                }}
+                            >
+                                <div className="ba-image-container" style={{ position: 'relative', overflow: 'hidden' }}>
+                                    <div style={{ display: 'flex', height: '250px' }}>
+                                        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                                            <img 
+                                                src={item.beforeImage} 
+                                                alt="Before" 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    height: '100%', 
+                                                    objectFit: 'cover'
+                                                }} 
+                                            />
+                                            <motion.span
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '10px',
+                                                    left: '10px',
+                                                    background: 'rgba(0,0,0,0.7)',
+                                                    color: 'white',
+                                                    padding: '0.25rem 0.75rem',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 700,
+                                                    textTransform: 'uppercase'
+                                                }}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: 0.3 }}
+                                            >
+                                                Before
+                                            </motion.span>
+                                        </div>
+                                        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                                            <img 
+                                                src={item.afterImage} 
+                                                alt="After" 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    height: '100%', 
+                                                    objectFit: 'cover'
+                                                }} 
+                                            />
+                                            <motion.span
+                                                style={{
+                                                    position: 'absolute',
+                                                    bottom: '10px',
+                                                    right: '10px',
+                                                    background: 'var(--brand-orange)',
+                                                    color: 'white',
+                                                    padding: '0.25rem 0.75rem',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 700,
+                                                    textTransform: 'uppercase'
+                                                }}
+                                                initial={{ opacity: 0, x: 10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: 0.3 }}
+                                            >
+                                                After
+                                            </motion.span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="ba-info">
-                                <span className="ba-category">{item.category}</span>
-                                <h3>{item.title}</h3>
-                                <p>{item.description}</p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
+                                
+                                <div className="ba-info" style={{ padding: '1.5rem' }}>
+                                    <motion.span 
+                                        style={{
+                                            display: 'inline-block',
+                                            padding: '0.25rem 0.75rem',
+                                            background: 'rgba(249, 115, 22, 0.1)',
+                                            color: 'var(--brand-orange)',
+                                            borderRadius: '20px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 700,
+                                            textTransform: 'uppercase',
+                                            marginBottom: '0.75rem'
+                                        }}
+                                        whileHover={{ scale: 1.05 }}
+                                    >
+                                        {item.category}
+                                    </motion.span>
+                                    <h3 style={{ 
+                                        fontSize: '1.3rem', 
+                                        fontWeight: 800, 
+                                        marginBottom: '0.5rem',
+                                        color: 'var(--brand-black)'
+                                    }}>
+                                        {item.title}
+                                    </h3>
+                                    <p style={{ color: '#666', lineHeight: 1.5, fontSize: '0.95rem' }}>
+                                        {item.description}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </AnimatePresence>
             </section>
 
             <Lightbox

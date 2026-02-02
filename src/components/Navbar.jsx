@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield, ArrowUpRight } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+
+    // Track scroll for navbar styling
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Close menu when route changes
     useEffect(() => {
@@ -59,24 +69,62 @@ const Navbar = () => {
         }
     };
 
+    const navLinks = [
+        { name: 'Home', path: '/' },
+        { name: 'Services', path: '/', state: { scrollToServices: true } },
+        { name: 'Results', path: '/results' },
+        { name: 'About', path: '/about' },
+        { name: 'Contact', path: '/contact' }
+    ];
+
     return (
         <>
-            <nav className="navbar">
+            <motion.nav 
+                className="navbar"
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                style={{
+                    background: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
+                    boxShadow: scrolled ? '0 4px 30px rgba(0,0,0,0.1)' : 'none',
+                }}
+            >
                 <div className="navbar-container">
                     <Link to="/" className="logo-container">
-                        <div className="logo-icon">
+                        <motion.div 
+                            className="logo-icon"
+                            whileHover={{ rotate: 180, scale: 1.1 }}
+                            transition={{ type: "spring", stiffness: 200 }}
+                        >
                             <div className="logo-dot"></div>
-                        </div>
-                        Hair Cure<span style={{ color: 'var(--brand-yellow)' }}>.</span>
+                        </motion.div>
+                        <motion.span
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            Hair Cure<span style={{ color: 'var(--brand-yellow)' }}>.</span>
+                        </motion.span>
                     </Link>
 
                     {/* Desktop Links */}
                     <div className="nav-links">
-                        <Link to="/" className="nav-link">Home</Link>
-                        <Link to="/" state={{ scrollToServices: true }} className="nav-link">Services</Link>
-                        <Link to="/results" className="nav-link">Clinical Results</Link>
-                        <Link to="/about" className="nav-link">About</Link>
-                        <Link to="/contact" className="nav-link">Contact</Link>
+                        {navLinks.map((link, i) => (
+                            <motion.div
+                                key={link.name}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * i }}
+                            >
+                                <Link 
+                                    to={link.path} 
+                                    state={link.state}
+                                    className="nav-link"
+                                >
+                                    {link.name}
+                                </Link>
+                            </motion.div>
+                        ))}
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -84,12 +132,17 @@ const Navbar = () => {
                             Book Now
                         </Link>
 
-                        <button className="mobile-menu-btn" onClick={() => setIsOpen(true)}>
+                        <motion.button 
+                            className="mobile-menu-btn" 
+                            onClick={() => setIsOpen(true)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
                             <Menu size={24} strokeWidth={3} />
-                        </button>
+                        </motion.button>
                     </div>
                 </div>
-            </nav>
+            </motion.nav>
 
             <AnimatePresence>
                 {isOpen && (
@@ -101,34 +154,55 @@ const Navbar = () => {
                         variants={menuVariants}
                     >
                         <div className="menu-header">
-                            {/* Removed System Tag */}
                             <div />
-                            <button className="close-btn" onClick={() => setIsOpen(false)}>
+                            <motion.button 
+                                className="close-btn" 
+                                onClick={() => setIsOpen(false)}
+                                whileHover={{ rotate: 90, scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                            >
                                 <X size={32} />
-                            </button>
+                            </motion.button>
                         </div>
 
                         <div className="mobile-links-container">
-                            {['Home', 'Services', 'Results', 'About', 'Contact'].map((item) => (
+                            {navLinks.map((link, i) => (
                                 <motion.div
-                                    key={item}
+                                    key={link.name}
                                     variants={itemVariants}
                                     className="menu-item-wrapper"
                                 >
                                     <Link
-                                        to={item === 'Home' || item === 'Services' ? '/' : `/${item.toLowerCase()}`}
-                                        state={item === 'Services' ? { scrollToServices: true } : {}}
+                                        to={link.path}
+                                        state={link.state}
                                         className="mobile-nav-link"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            {item === 'Results' ? 'Clinical Results' : item}
-                                            <ArrowUpRight size={32} className="menu-arrow" />
+                                            <span>{link.name}</span>
+                                            <motion.div
+                                                initial={{ opacity: 0, x: -20 }}
+                                                whileHover={{ opacity: 1, x: 0 }}
+                                            >
+                                                <ArrowUpRight size={32} className="menu-arrow" />
+                                            </motion.div>
                                         </div>
                                     </Link>
                                 </motion.div>
                             ))}
                         </div>
+
+                        {/* Menu Footer */}
+                        <motion.div 
+                            className="menu-footer"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '0.9rem' }}>
+                                © 2026 Hair Cure. All rights reserved.
+                            </p>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
