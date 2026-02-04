@@ -8,11 +8,8 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
-    
+
     // Touch handling for swipe to close - only active when menu is open
-    const x = useMotionValue(0);
-    const opacity = useTransform(x, [0, 100], [1, 0.2]);
-    const scale = useTransform(x, [0, 100], [1, 0.95]);
 
     // Track scroll for navbar styling
     useEffect(() => {
@@ -52,6 +49,7 @@ const Navbar = () => {
 
     const menuVariants = {
         closed: {
+            x: "100%",
             transition: {
                 type: "spring",
                 stiffness: 400,
@@ -61,6 +59,7 @@ const Navbar = () => {
             }
         },
         open: {
+            x: "0%",
             transition: {
                 type: "spring",
                 stiffness: 300,
@@ -72,57 +71,53 @@ const Navbar = () => {
     };
 
     const itemVariants = {
-        closed: { 
-            opacity: 0, 
+        closed: {
+            opacity: 0,
             x: 50,
             y: 20,
-            scale: 0.9,
-            rotate: -2
+            scale: 0.95,
+            transition: { duration: 0.2 }
         },
         open: {
             opacity: 1,
             x: 0,
             y: 0,
             scale: 1,
-            rotate: 0,
-            transition: { 
+            transition: {
                 type: "spring",
                 stiffness: 400,
-                damping: 28,
-                mass: 0.8
+                damping: 25,
             }
         }
     };
 
     const overlayVariants = {
-        closed: { 
+        closed: {
             opacity: 0,
             backdropFilter: "blur(0px)"
         },
-        open: { 
+        open: {
             opacity: 1,
             backdropFilter: "blur(8px)",
             transition: {
-                duration: 0.3,
-                ease: [0.22, 1, 0.36, 1]
+                duration: 0.3
             }
         },
         exit: {
             opacity: 0,
             backdropFilter: "blur(0px)",
             transition: {
-                duration: 0.25,
-                ease: [0.22, 1, 0.36, 1]
+                duration: 0.2
             }
         }
     };
 
     const headerVariants = {
         closed: { opacity: 0, y: -20 },
-        open: { 
-            opacity: 1, 
+        open: {
+            opacity: 1,
             y: 0,
-            transition: { 
+            transition: {
                 type: "spring",
                 stiffness: 400,
                 damping: 30,
@@ -133,10 +128,10 @@ const Navbar = () => {
 
     const footerVariants = {
         closed: { opacity: 0, y: 20 },
-        open: { 
-            opacity: 1, 
+        open: {
+            opacity: 1,
             y: 0,
-            transition: { 
+            transition: {
                 type: "spring",
                 stiffness: 400,
                 damping: 30,
@@ -147,7 +142,7 @@ const Navbar = () => {
 
     const decorativeLineVariants = {
         closed: { scaleY: 0, originY: 0 },
-        open: { 
+        open: {
             scaleY: 1,
             transition: {
                 duration: 0.6,
@@ -174,7 +169,7 @@ const Navbar = () => {
 
     return (
         <>
-            <motion.nav 
+            <motion.nav
                 className={`navbar ${scrolled ? 'scrolled' : ''}`}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
@@ -182,7 +177,7 @@ const Navbar = () => {
             >
                 <div className="navbar-container">
                     <Link to="/" className="logo-container">
-                        <motion.div 
+                        <motion.div
                             className="logo-icon"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
@@ -208,8 +203,8 @@ const Navbar = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 * i }}
                             >
-                                <Link 
-                                    to={link.path} 
+                                <Link
+                                    to={link.path}
                                     state={link.state}
                                     className="nav-link"
                                 >
@@ -221,7 +216,7 @@ const Navbar = () => {
 
                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                         {/* Quick Call Button - Mobile Only */}
-                        <motion.a 
+                        <motion.a
                             href="tel:+919567101002"
                             className="hide-desktop"
                             style={{
@@ -243,8 +238,8 @@ const Navbar = () => {
                             Book Now
                         </Link>
 
-                        <motion.button 
-                            className="mobile-menu-btn" 
+                        <motion.button
+                            className="mobile-menu-btn"
                             onClick={() => setIsOpen(true)}
                             whileTap={{ scale: 0.95 }}
                             aria-label="Open menu"
@@ -272,25 +267,19 @@ const Navbar = () => {
                             exit="exit"
                             onClick={() => setIsOpen(false)}
                         />
-                        
+
                         {/* Menu Panel */}
                         <motion.div
                             className="mobile-menu"
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 30
-                            }}
+                            initial="closed"
+                            animate="open"
+                            exit="exit"
                             variants={menuVariants}
-                            style={{ x, opacity, scale }}
                             drag="x"
                             dragConstraints={{ left: 0, right: 100 }}
-                            dragElastic={0.2}
+                            dragElastic={0.1}
                             onDragEnd={handleDragEnd}
-                            dragSnapToOrigin={false}
+                            dragSnapToOrigin={true}
                         >
                             {/* Decorative Line */}
                             <motion.div
@@ -307,7 +296,7 @@ const Navbar = () => {
                             />
 
                             {/* Swipe handle indicator */}
-                            <motion.div 
+                            <motion.div
                                 className="hide-desktop"
                                 initial={{ opacity: 0, scaleX: 0 }}
                                 animate={{ opacity: 1, scaleX: 1 }}
@@ -321,16 +310,14 @@ const Navbar = () => {
                                     height: '4px',
                                     background: 'rgba(0,0,0,0.2)',
                                     borderRadius: '2px',
-                                }} 
+                                }}
                             />
 
-                            <motion.div 
+                            <motion.div
                                 className="menu-header"
                                 variants={headerVariants}
-                                initial="closed"
-                                animate="open"
                             >
-                                <motion.span 
+                                <motion.span
                                     className="menu-title"
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -338,8 +325,8 @@ const Navbar = () => {
                                 >
                                     Menu
                                 </motion.span>
-                                <motion.button 
-                                    className="close-btn" 
+                                <motion.button
+                                    className="close-btn"
                                     onClick={() => setIsOpen(false)}
                                     whileHover={{ rotate: 90, scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
@@ -363,10 +350,10 @@ const Navbar = () => {
                                             className="mobile-nav-link"
                                             onClick={() => setIsOpen(false)}
                                         >
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                justifyContent: 'space-between' 
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between'
                                             }}>
                                                 <span>{link.name}</span>
                                                 <ArrowUpRight size={24} className="menu-arrow" />
@@ -376,11 +363,11 @@ const Navbar = () => {
                                 ))}
 
                                 {/* Quick Contact Buttons - Mobile */}
-                                <motion.div 
+                                <motion.div
                                     variants={itemVariants}
                                     className="quick-contact-bar"
                                 >
-                                    <a 
+                                    <a
                                         href="tel:+919567101002"
                                         className="quick-contact-btn secondary"
                                         onClick={() => setIsOpen(false)}
@@ -388,7 +375,7 @@ const Navbar = () => {
                                         <Phone size={18} />
                                         Call
                                     </a>
-                                    <Link 
+                                    <Link
                                         to="/contact"
                                         className="quick-contact-btn"
                                         onClick={() => setIsOpen(false)}
@@ -398,13 +385,11 @@ const Navbar = () => {
                                 </motion.div>
                             </div>
 
-                            <motion.div 
+                            <motion.div
                                 className="menu-footer"
                                 variants={footerVariants}
-                                initial="closed"
-                                animate="open"
                             >
-                                <motion.div 
+                                <motion.div
                                     className="menu-footer-content"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
