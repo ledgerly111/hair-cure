@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Reveal } from '../components/ui/Reveal';
 import { GradientText } from '../components/ui/GradientText';
 import Lightbox from '../components/Lightbox';
