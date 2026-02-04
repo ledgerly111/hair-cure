@@ -208,7 +208,7 @@
     bottom: 0;
     width: 100%;
     max-width: 420px;
-    background: linear-gradient(145deg, var(--brand-yellow) 0%, #f5d547 100%);
+    background: var(--brand-orange);
     z-index: 200;
     padding: 1rem;
     padding-top: calc(1rem + env(safe-area-inset-top));
