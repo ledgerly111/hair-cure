@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowUpRight, Phone } from 'lucide-react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
@@ -9,21 +9,10 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
     
-    // Touch handling for swipe to close
+    // Touch handling for swipe to close - only active when menu is open
     const x = useMotionValue(0);
-    const opacityValue = useTransform(x, [0, 100], [1, 0.2]);
-    const scaleValue = useTransform(x, [0, 100], [1, 0.95]);
-    
-    // Use spring to ensure smooth, valid values
-    const opacity = useSpring(opacityValue, { stiffness: 300, damping: 30 });
-    const scale = useSpring(scaleValue, { stiffness: 300, damping: 30 });
-    
-    // Reset motion values when menu opens
-    useEffect(() => {
-        if (isOpen) {
-            x.set(0);
-        }
-    }, [isOpen, x]);
+    const opacity = useTransform(x, [0, 100], [1, 0.2]);
+    const scale = useTransform(x, [0, 100], [1, 0.95]);
 
     // Track scroll for navbar styling
     useEffect(() => {
@@ -63,7 +52,6 @@ const Navbar = () => {
 
     const menuVariants = {
         closed: {
-            x: "100%",
             transition: {
                 type: "spring",
                 stiffness: 400,
@@ -73,7 +61,6 @@ const Navbar = () => {
             }
         },
         open: {
-            x: 0,
             transition: {
                 type: "spring",
                 stiffness: 300,
@@ -289,15 +276,16 @@ const Navbar = () => {
                         {/* Menu Panel */}
                         <motion.div
                             className="mobile-menu"
-                            initial="closed"
-                            animate="open"
-                            exit="closed"
-                            variants={menuVariants}
-                            style={{ 
-                                x: x,
-                                opacity: opacity, 
-                                scale: scale 
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 30
                             }}
+                            variants={menuVariants}
+                            style={{ x, opacity, scale }}
                             drag="x"
                             dragConstraints={{ left: 0, right: 100 }}
                             dragElastic={0.2}
