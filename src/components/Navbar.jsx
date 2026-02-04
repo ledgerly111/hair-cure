@@ -74,14 +74,94 @@ const Navbar = () => {
     };
 
     const itemVariants = {
-        closed: { opacity: 0, x: 30 },
+        closed: { 
+            opacity: 0, 
+            x: 50,
+            y: 20,
+            scale: 0.9,
+            rotate: -2
+        },
         open: {
             opacity: 1,
             x: 0,
+            y: 0,
+            scale: 1,
+            rotate: 0,
             transition: { 
                 type: "spring",
-                stiffness: 300,
-                damping: 24
+                stiffness: 400,
+                damping: 28,
+                mass: 0.8
+            }
+        }
+    };
+
+    const overlayVariants = {
+        closed: { 
+            opacity: 0,
+            backdropFilter: "blur(0px)"
+        },
+        open: { 
+            opacity: 1,
+            backdropFilter: "blur(8px)",
+            transition: {
+                duration: 0.3,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        },
+        exit: {
+            opacity: 0,
+            backdropFilter: "blur(0px)",
+            transition: {
+                duration: 0.25,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        }
+    };
+
+    const headerVariants = {
+        closed: { opacity: 0, y: -20 },
+        open: { 
+            opacity: 1, 
+            y: 0,
+            transition: { 
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+                delay: 0.1
+            }
+        }
+    };
+
+    const footerVariants = {
+        closed: { opacity: 0, y: 20 },
+        open: { 
+            opacity: 1, 
+            y: 0,
+            transition: { 
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+                delay: 0.4
+            }
+        }
+    };
+
+    const decorativeLineVariants = {
+        closed: { scaleY: 0, originY: 0 },
+        open: { 
+            scaleY: 1,
+            transition: {
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.2
+            }
+        },
+        exit: {
+            scaleY: 0,
+            transition: {
+                duration: 0.3,
+                ease: [0.22, 1, 0.36, 1]
             }
         }
     };
@@ -185,12 +265,13 @@ const Navbar = () => {
                             style={{
                                 position: 'fixed',
                                 inset: 0,
-                                background: 'rgba(0,0,0,0.5)',
+                                background: 'rgba(0,0,0,0.4)',
                                 zIndex: 199,
                             }}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                            variants={overlayVariants}
+                            initial="closed"
+                            animate="open"
+                            exit="exit"
                             onClick={() => setIsOpen(false)}
                         />
                         
@@ -208,29 +289,63 @@ const Navbar = () => {
                             onDragEnd={handleDragEnd}
                             dragSnapToOrigin={false}
                         >
-                            {/* Swipe handle indicator */}
-                            <div className="hide-desktop" style={{
-                                position: 'absolute',
-                                top: '12px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                width: '40px',
-                                height: '4px',
-                                background: 'rgba(0,0,0,0.2)',
-                                borderRadius: '2px',
-                            }} />
+                            {/* Decorative Line */}
+                            <motion.div
+                                variants={decorativeLineVariants}
+                                style={{
+                                    position: 'absolute',
+                                    left: '1.5rem',
+                                    top: '80px',
+                                    bottom: '100px',
+                                    width: '2px',
+                                    background: 'rgba(0,0,0,0.15)',
+                                    zIndex: 1,
+                                }}
+                            />
 
-                            <div className="menu-header">
-                                <div />
+                            {/* Swipe handle indicator */}
+                            <motion.div 
+                                className="hide-desktop"
+                                initial={{ opacity: 0, scaleX: 0 }}
+                                animate={{ opacity: 1, scaleX: 1 }}
+                                transition={{ delay: 0.3, duration: 0.3 }}
+                                style={{
+                                    position: 'absolute',
+                                    top: '12px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    width: '40px',
+                                    height: '4px',
+                                    background: 'rgba(0,0,0,0.2)',
+                                    borderRadius: '2px',
+                                }} 
+                            />
+
+                            <motion.div 
+                                className="menu-header"
+                                variants={headerVariants}
+                                initial="closed"
+                                animate="open"
+                            >
+                                <motion.span 
+                                    className="menu-title"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.15, type: "spring", stiffness: 400 }}
+                                >
+                                    Menu
+                                </motion.span>
                                 <motion.button 
                                     className="close-btn" 
                                     onClick={() => setIsOpen(false)}
+                                    whileHover={{ rotate: 90, scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
+                                    transition={{ type: "spring", stiffness: 400 }}
                                     aria-label="Close menu"
                                 >
                                     <X size={24} />
                                 </motion.button>
-                            </div>
+                            </motion.div>
 
                             <div className="mobile-links-container">
                                 {navLinks.map((link, i) => (
@@ -282,9 +397,19 @@ const Navbar = () => {
 
                             <motion.div 
                                 className="menu-footer"
-                                variants={itemVariants}
+                                variants={footerVariants}
+                                initial="closed"
+                                animate="open"
                             >
-                                <p>© 2026 Hair Cure. All rights reserved.</p>
+                                <motion.div 
+                                    className="menu-footer-content"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <div className="menu-footer-line" />
+                                    <p>© 2026 Hair Cure. All rights reserved.</p>
+                                </motion.div>
                             </motion.div>
                         </motion.div>
                     </>

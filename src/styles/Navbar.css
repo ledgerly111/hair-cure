@@ -208,7 +208,7 @@
     bottom: 0;
     width: 100%;
     max-width: 420px;
-    background: var(--brand-yellow);
+    background: linear-gradient(145deg, var(--brand-yellow) 0%, #f5d547 100%);
     z-index: 200;
     padding: 1rem;
     padding-top: calc(1rem + env(safe-area-inset-top));
@@ -218,6 +218,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 480px) {
@@ -242,6 +243,15 @@
     align-items: center;
     margin-bottom: 2rem;
     flex-shrink: 0;
+    padding: 0 0.5rem;
+}
+
+.menu-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 .close-btn {
@@ -283,9 +293,29 @@
     letter-spacing: -1px;
     line-height: 1;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-    padding: 1.25rem 0;
-    transition: all 0.3s;
+    padding: 1.25rem 0 1.25rem 1.5rem;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 4px;
+    height: 60%;
+    background: var(--brand-black);
+    border-radius: 2px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mobile-nav-link:hover::before,
+.mobile-nav-link:active::before {
+    transform: translateY(-50%) scaleY(1);
 }
 
 @media (min-width: 768px) {
@@ -326,9 +356,23 @@
 /* Menu Footer */
 .menu-footer {
     padding: 1.5rem 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
     margin-top: auto;
     flex-shrink: 0;
+}
+
+.menu-footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-footer-line {
+    width: 60px;
+    height: 3px;
+    background: var(--brand-black);
+    border-radius: 2px;
+    opacity: 0.2;
 }
 
 .menu-footer p {
