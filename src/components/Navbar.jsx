@@ -273,7 +273,7 @@ const Navbar = () => {
                             className="mobile-menu"
                             initial="closed"
                             animate="open"
-                            exit="exit"
+                            exit="closed"
                             variants={menuVariants}
                             drag="x"
                             dragConstraints={{ left: 0, right: 100 }}
